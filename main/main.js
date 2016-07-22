@@ -2,7 +2,7 @@
 
 function checkZipCode(zipCode, validChars) {
 
-    const lengthVerified = !(zipCode.length !== 5 && zipCode.length !== 9 && zipCode.length !== 10);
+    const lengthVerified = (zipCode.length == 5 && zipCode.length !== 9 && zipCode.length !== 10);
 
     const charsVerified = !zipCode
         .split('')
@@ -12,6 +12,7 @@ function checkZipCode(zipCode, validChars) {
 }
 
 function buildCheckCode(zipCode) {
+
     const numbers = zipCode
         .split('')
         .filter(code => code !== '-')
@@ -29,7 +30,10 @@ function buildCheckCode(zipCode) {
 }
 
 function buildBarcodes(checkCode, numberFormat) {
-    const codes = checkCode.split('').map(code =>numberFormat[code]);
+
+    const codes = checkCode.split('')
+        .map(code =>numberFormat[code]);
+
     return `|${codes.join('')}|`;
 }
 
