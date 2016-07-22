@@ -1,35 +1,40 @@
 'use strict';
 
-function checkZipCode(zipCodes) {
-    const zipCode = zipCodes.split(',');
-    if (zipCode.length !== 5 || zipCode.length !== 9 || zipCode.length !== 10) {
-        return false;
-    }
-    const array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '-'];
-    for (const code of zipCode) {
-        let value = '';
-        if (array.includes(code)) {
-            value = true;
-        }
-        else {
-            return false;
-        }
-    }
-    return true;
+function checkZipCode(zipCode, validChars) {
+
+    const lengthVerified = !(zipCode.length !== 5 && zipCode.length !== 9 && zipCode.length !== 10);
+
+    const charsVerified = !zipCode
+        .split('')
+        .some(code => validChars.every(validChar => validChar !== code));
+
+    return lengthVerified && charsVerified;
 }
 
-function buildCheckCode(zipCodes) {
-    const zipCode = zipCodes.split('');
-    const zipCodeTotal = zipCode.reduce((pre, next)=> {
-        return parseInt(pre) + parseInt(next);
-    });
-    if (zipCodeTotal / 10 !== 0) {
-        zipCodes = zipCodes.concat(10 - (zipCodeTotal % 10));
+function buildCheckCode(zipCode) {
+    const numbers = zipCode
+        .split('')
+        .filter(code => code !== '-')
+        .map(code => parseInt(code));
+
+    const sum = numbers.reduce((a, b)=> a + b);
+
+    if (sum % 10 === 0) {
+        numbers.push(0);
+    } else {
+        numbers.push(10 - (sum % 10));
     }
-    return zipCodes;
+
+    return numbers.join('');
+}
+
+function buildBarcodes(checkCode, numberFormat) {
+    const codes = checkCode.split('').map(code =>numberFormat[code]);
+    return `|${codes.join('')}|`;
 }
 
 module.exports = {
     checkZipCode: checkZipCode,
-    buildCheckCode: buildCheckCode
+    buildCheckCode: buildCheckCode,
+    buildBarcodes: buildBarcodes
 };
